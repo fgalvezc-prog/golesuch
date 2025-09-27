@@ -1,10 +1,10 @@
-# regresion_goles_u_vs_laserena.py
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
+
+#Datos sacados de sofascore.com
 
 datos = {
     'Posesion balón': [43, 67, 53, 59, 68, 60, 39, 40, 58, 63, 44, 63, 60, 73, 54, 67, 65, 56, 61, 66, 63, 66, 43, 44, 65, 59, 55, 70, 66, 53, 54, 69, 34, 56, 59, 50, ],
@@ -18,7 +18,8 @@ datos = {
 
 df = pd.DataFrame(datos)
 
-X = df[['Posesion balón', 'Tiros', 'Tiros al arco', 'Atajadas del rival', 'Oportunidades clave', 'Corners']]
+variables = ['Posesion balón', 'Tiros', 'Tiros al arco', 'Atajadas del rival', 'Oportunidades clave', 'Corners']
+X = df[variables]
 y = df['Goles_U']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
@@ -30,6 +31,26 @@ y_pred = model.predict(X_test)
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 r2 = r2_score(y_test, y_pred)
 
+prom_global = df[variables].mean().to_frame().T
+prom_last5  = df[variables].tail(5).mean().to_frame().T
+prom_last3  = df[variables].tail(3).mean().to_frame().T
+
+pred_global = float(model.predict(prom_global)[0])
+pred_last5  = float(model.predict(prom_last5)[0])
+pred_last3  = float(model.predict(prom_last3)[0])
+
+valores = np.array([pred_global, pred_last5, pred_last3])
+pred_recomendada = float(np.median(valores))
+pred_recomendada_red = max(0, round(pred_recomendada))
+
+
+
 print(f"Resultados de la Evaluación (Goles de U. de Chile vs La Serena)")
 print(f"RMSE: {rmse:.2f} (en promedio, las predicciones de goles se desvían en {rmse:.2f})")
 print(f"R^2: {r2:.2f} (el {r2:.0%} de la variación en los goles es explicada por las variables)")
+
+print("\nPronóstico U. de Chile vs La Serena")
+print(f"  Global de partidos jugados en el año  : {pred_global:.2f} goles")
+print(f"  Últimos 5 partidos jugados : {pred_last5:.2f} goles")
+print(f"  Últimos 3 partidos jugados : {pred_last3:.2f} goles")
+print(f"\n  ► Pronóstico: La U de Chile hará {pred_recomendada:.2f}  → {pred_recomendada_red} gol(es)")
