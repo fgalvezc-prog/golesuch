@@ -43,8 +43,6 @@ valores = np.array([pred_global, pred_last5, pred_last3])
 pred_recomendada = float(np.median(valores))
 pred_recomendada_red = max(0, round(pred_recomendada))
 
-
-
 print(f"Resultados de la Evaluación (Goles de U. de Chile vs La Serena)")
 print(f"RMSE: {rmse:.2f} (en promedio, las predicciones de goles se desvían en {rmse:.2f})")
 print(f"R^2: {r2:.2f} (el {r2:.0%} de la variación en los goles es explicada por las variables)")
